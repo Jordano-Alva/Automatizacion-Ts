@@ -4,11 +4,11 @@ import dotenv from 'dotenv';
 import { ListBucketsCommand } from '@aws-sdk/client-s3';
 import { formatSize, progresoBarra, validacionBucket } from '../../utils/utils';
 import { compresionZip } from '../adm-zip';
+import { barraProgress, barraProgressAws } from '../../utils/cli-Progress';
 dotenv.config();
 
 const dataAws = dataConexion(1);
 const S3Client = createS3Client(dataAws);
-
 
 const { sync } = new S3SyncClient({ client: S3Client })
 
@@ -36,17 +36,29 @@ export async function listarBuckets() {
 };
 
 
-function preparacionZip() {
+export function preparacionZip() {
+
     try {
-        const { carpetaCreada, directorioCarpeta } = compresionZip();
-        return { carpetaCreada, directorioCarpeta }
+
+        const resultados = compresionZip();
+
+        resultados.forEach((resultado) => {
+            const { mensaje, validacion, carpetaCreada, directorioCarpeta } = resultado;
+            if (validacion) {
+                // console.log(`Carpeta creada: ${carpetaCreada}`);
+                // console.log(`Directorio de la carpeta: ${directorioCarpeta}`);
+                sincronizacionAws(directorioCarpeta!)
+            } else {
+                console.error(`Error: ${mensaje}`);
+            }
+        });
     } catch (error) {
-        console.log('Error en preparacion de carpeta zip')
+        console.log('Error en preparación de carpeta zip:', error);
     }
 }
 
 //si funciona la sincronizacion, ver como sacar el loading y valdiar la sincronizacion completa
-export async function sincronizacionAws() {
+async function sincronizacionAws(carpetaSincronizar: string) {
     try {
 
         const monitor = new TransferMonitor()
@@ -77,13 +89,11 @@ export async function sincronizacionAws() {
 
 
             }
-
             // console.log(`Current Size: ${current}, Total Size: ${total}`);
-        })
-
-        const res = await sync(`${process.env.HOMEPATH}\\Downloads\\Zip2`, 's3://my-aws-bucket-backup', { monitor })
+        });
+        // const res = await sync(`${process.env.HOMEPATH}\\Downloads\\Zip2`, 's3://my-aws-bucket-backup', { monitor })
+        const res = await sync(carpetaSincronizar, 's3://my-aws-bucket-backup', { monitor,  partSize: 100 * 1024 * 1024  })
         // console.log(res)
-
         //ejemplo de res:
         // {
         //     created: [
