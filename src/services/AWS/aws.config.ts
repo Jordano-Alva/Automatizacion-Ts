@@ -1,6 +1,20 @@
-import { S3Client } from '@aws-sdk/client-s3'
+import { S3Client } from '@aws-sdk/client-s3';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
+import https from 'https';
 import dotenv from 'dotenv';
+
 dotenv.config();
+
+
+const httpHandler = new NodeHttpHandler({
+    httpsAgent: new https.Agent({
+        keepAlive: true,
+        maxSockets: 300,//Se aumenta segun la carga de subida
+        timeout: 60000,//El tiempo que se debe antes de cerrar un socket inactivo
+    }),
+    socketAcquisitionWarningTimeout: 2000//Ajustar tiempo para que se emita una adverntencia
+})
+
 
 interface EnvAws {
     region: string;
@@ -44,7 +58,8 @@ export const createS3Client = (dataAws: EnvAws) => {
         credentials: {
             accessKeyId: dataAws.credentials.accessKeyId,
             secretAccessKey: dataAws.credentials.secretAccessKey
-        }
+        },
+        requestHandler: httpHandler
     })
 }
 

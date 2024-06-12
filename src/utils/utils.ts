@@ -1,4 +1,4 @@
-import { Bucket, ReplicationRuleFilter } from "@aws-sdk/client-s3";
+import { Bucket } from "@aws-sdk/client-s3";
 import { htmlError } from "../modules/email/template/htmlError.template";
 import { htmlSuccess } from "../modules/email/template/htmlSuccess.template";
 
@@ -9,7 +9,7 @@ export const fechaHoy = new Intl.DateTimeFormat("es-Es", {
 
 
 export function filtrarArchivos(files: string[], extension: string = '.Bak') {
-    if(extension === 'all'){
+    if (extension === 'all') {
         return files;
     }
     return files.filter(file => file.endsWith(extension));

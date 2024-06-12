@@ -42,7 +42,7 @@ const transporte = nodemailer.createTransport({
   * @param OpcionesCorreo las opciones para el correo electrónico, incluido el remitente, el destinatario, el asunto y el contenido del mensaje.
   * @returns Una promesa que se resuelve cuando el correo electrónico se ha enviado correctamente o se rechaza con un error si hubo un problema al enviar el correo electrónico.
   */
-export const enviarCorreo = async (opciones: OpcionesCorreo) => {
+export const enviarCorreo = async (opciones: OpcionesCorreo, NumberOption: number = 1) => {
 
     const {
         archivo = [],
@@ -50,7 +50,7 @@ export const enviarCorreo = async (opciones: OpcionesCorreo) => {
         remitente = EMAIL_USER,
         destinatario = '',
         asunto = '',
-        mensaje = htmlAEnviar(archivo, carpeta).success,
+        mensaje = (NumberOption === 1) ? htmlAEnviar(archivo, carpeta).success : htmlAEnviar(archivo, carpeta).error,
     } = opciones;
 
     try {
@@ -66,7 +66,29 @@ export const enviarCorreo = async (opciones: OpcionesCorreo) => {
 
         const res = await transporte.sendMail(mailOptions);
 
-        console.info(res);
+        // console.info(res);
+        // {
+        //     accepted: [ 'jordanoalvaradoc@gmail.com' ],
+        //     rejected: [],
+        //     ehlo: [
+        //       'SIZE 35882577',
+        //       '8BITMIME',
+        //       'AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH',
+        //       'ENHANCEDSTATUSCODES',
+        //       'PIPELINING',
+        //       'CHUNKING',
+        //       'SMTPUTF8'
+        //     ],
+        //     envelopeTime: 4181,
+        //     messageTime: 1645,
+        //     messageSize: 1959,
+        //     response: '250 2.0.0 OK  1717647831 a1e0cc1a2514c-80b5eb74c53sm83872241.34 - gsmtp',
+        //     envelope: {
+        //       from: 'llamadasprue@gmail.com',
+        //       to: [ 'jordanoalvaradoc@gmail.com' ]
+        //     },
+        //     messageId: '<30e44259-da8f-1dc1-98d4-4b2016108e6c@gmail.com>'
+        //   }
         return console.log(
             `Se envió exitosamente el correo a: ${opciones.destinatario} el ${fechaHoy} `
         );
