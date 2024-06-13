@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config()
 
 console.log(process.env.USERPROFILE)
-
+console.log(process.env.HOME)
 
 
 //corregir la fecha que toma en la modificacion, ya que le aumenta 1 dia cuando es 26
