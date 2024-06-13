@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config()
 
 console.log(process.env.USERPROFILE)
+
 console.log(process.env.HOME)
 
 
