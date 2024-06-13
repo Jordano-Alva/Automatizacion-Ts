@@ -7,7 +7,8 @@ dotenv.config()
 
 console.log(process.env.USERPROFILE)
 
-console.log(process.env.HOME)
+console.log('PRUEBAS DE ARCHIVos:', process.env.HOME)
+
 
 
 
