@@ -2,7 +2,10 @@ import AdmZip from "adm-zip";
 import { fechaHoy, filtrarArchivos } from "../utils/utils";
 import { crearCarpeta, formatearFecha, leerContenidoDirectorio, obtenerFechaCreacion } from "./fileSystem";
 import path from "path";
+import dotenv from 'dotenv';
 import { barraProgress } from "../utils/cli-Progress";
+dotenv.config();
+
 
 const urlPath = process.env.HOMEPATH + "\\Downloads";
 const zipCreado = urlPath + "\\PruebaZipHora";
