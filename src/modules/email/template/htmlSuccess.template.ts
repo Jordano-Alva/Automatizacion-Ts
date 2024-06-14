@@ -45,7 +45,7 @@ export const htmlSuccess = (archivos: string[], carpeta: string, fecha: string =
             <h2>NOTIFICACION DE PROCESO AUTOMATIZADO</h2>
             <p>El proceso ejecutado se realizo con exito</p>
             <p>Proceso finalizado el: ${fecha} </p>
-            <p>un total de ${archivos.length} archivos se subieron al servicio de AWS-S3, los cuales se almacenaron en la carpeta: ${carpeta} se detallan a continuacion:</p>
+            <p>un total de ${archivos.length} archivos se subieron al servicio de AWS-S3, los cuales se almacenaron en en el Bucket: ${carpeta} se detallan a continuacion:</p>
             <ul>
                 ${archivosList} 
             </ul>
