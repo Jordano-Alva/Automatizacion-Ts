@@ -10,17 +10,17 @@ export const htmlSuccess = (archivos: string[], carpeta: string, fecha: string =
         <title>Email Template</title>
         <style>
             body {
-                font-family: Arial, sans-serif;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 line-height: 1.6;
                 margin: 0;
                 padding: 0;
             }
             .container {
-                max-width: 600px;
+                max-width: 900px;
                 margin: 0 auto;
                 padding: 20px;
                 border: 1px solid #ccc;
-                border-radius: 5px;
+                border-radius: 8px;
                 background-color: #f9f9f9;
             }
             h2 {
@@ -29,6 +29,7 @@ export const htmlSuccess = (archivos: string[], carpeta: string, fecha: string =
                 text-overflow: ellipsis;
                 overflow: hidden;
                 text-align: center;
+                color: green
             }
             p {
                 color: #666;
@@ -42,15 +43,15 @@ export const htmlSuccess = (archivos: string[], carpeta: string, fecha: string =
     </head>
     <body>
         <div class="container">
-            <h2>NOTIFICACION DE PROCESO AUTOMATIZADO</h2>
+            <h2>NOTIFICACION DE PROCESO AUTOMATIZADO -  EXITOSO</h2>
             <p>El proceso ejecutado se realizo con exito</p>
             <p>Proceso finalizado el: ${fecha} </p>
-            <p>un total de ${archivos.length} archivos se subieron al servicio de AWS-S3, los cuales se almacenaron en en el Bucket: ${carpeta} se detallan a continuacion:</p>
+            <p>Un total de ${archivos.length} archivos se subieron al servicio de AWS-S3, los cuales se almacenaron en en el Bucket: ${carpeta} se detallan a continuacion:</p>
             <ul>
                 ${archivosList} 
             </ul>
-            <div class="footer">
-                <p>Best Regards,<br> Your Company</p>
+             <div class="footer">
+                <img src="cid:logo-fundasen.png"; width="500" height="150"/>
             </div>
         </div>
     </body>`;
