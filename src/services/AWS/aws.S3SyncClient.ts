@@ -1,10 +1,9 @@
 import { S3SyncClient, TransferMonitor } from 's3-sync-client'
 import { createS3Client, dataConexion } from './aws.config'
 import dotenv from 'dotenv';
-import { ListBucketsCommand } from '@aws-sdk/client-s3';
-import { formatSize, progresoBarra, validacionBucket } from '../../utils/utils';
+import { CreateBucketCommand, ListBucketsCommand } from '@aws-sdk/client-s3';
+import { formatSize, progresoBarra } from '../../utils/utils';
 import { compresionZip } from '../adm-zip';
-import { barraProgress, barraProgressAws } from '../../utils/cli-Progress';
 import { enviarCorreo } from '../../nodemailer';
 dotenv.config();
 
@@ -17,22 +16,29 @@ export async function listarBuckets() {
     try {
         const listBucketsCommand = new ListBucketsCommand();
         const { Buckets } = await S3Client.send(listBucketsCommand);
+        // const crearBucket = new CreateBucketCommand({"Bucket": 'prueba'})
+        // const response = await S3Client.send(crearBucket);
 
         if (!Buckets) throw new Error('No se pudo obtener la lista de Buckets')
 
-        const listaBuckets = Buckets?.map((Bucket) => Bucket.Name)
-        // const listDos = listaBuckets?.join("\n")
-        const validacion = validacionBucket(Buckets)
+        //TODO: Considera crear el bucket
+        //TODO: validar el bucket
 
-        if (validacion) {
-            console.log({ validacion });
-            console.log(`Buckets: ${listaBuckets}`);
-            return { mensaje: listaBuckets, validacion: true };
-        } else {
-            return { mensaje: "No existen buckets", validacion: false };
-        }
+        return Buckets?.map((Bucket) => Bucket.Name)
+
+        // const listaBuckets = Buckets?.map((Bucket) => Bucket.Name)
+        // // const listDos = listaBuckets?.join("\n")
+        // const validacion = validacionBucket(Buckets)
+
+        // if (validacion) {
+        //     console.log({ validacion });
+        //     console.log(`Buckets: ${listaBuckets}`);
+        //     return { mensaje: listaBuckets, validacion: true };
+        // } else {
+        //     return { mensaje: "No existen buckets", validacion: false };
+        // }
     } catch (error) {
-        console.log(`Error en Listar Buckets: ${error}`);
+        throw new Error(`Error en Listar Buckets${error}`);
     }
 };
 
@@ -40,19 +46,20 @@ export async function listarBuckets() {
 export async function preparacionZip() {
 
     try {
+        //!Debo validar que exista el bucket, si no existe debo crearlo
         const validacionBucket = await listarBuckets();
-        // if(!validacionBucket?.validacion) throw new Error("No se pudo validar el bucket")
-          
-        //     validacionBucket.validacion
-
-        const resultados = compresionZip();
-        let archivoCreado: string[] = []
+        if (!validacionBucket) {
+            throw new Error(`No se pudo validar el bucket`)
+        }
+        const resultados = await compresionZip();
+        let archivoCreado: string[] = [];
+        const errores: string[] = [];
 
         for (const resultado of resultados) {
             const { mensaje, validacion, carpetaCreada, directorioCarpeta } = resultado;
+
             if (validacion) {
                 const res = await sincronizacionAws(directorioCarpeta!)
-                // console.log('respuesta de SincronizacionAws', res)
 
                 if (res) {
                     Object.entries(res).forEach(([key, value]) => {
@@ -60,27 +67,33 @@ export async function preparacionZip() {
                     });
                 } else {
                     console.log('no se pudo sincronizar')
+                    errores.push(`Existe problemas con la sincronizacion de AWS`)
                     return false
                 }
             } else {
-                console.log(`Error en la validacion de compresion: ${Error}`)
+                errores.push(mensaje)
+                console.log(`\nError en la validacion de compresion`)
             }
         }
 
         if (archivoCreado.length > 0) {
             //!en la opcion carpeta, debo retornar Bucket, modificar lo del correo
-            enviarCorreo({ destinatario: "jordanoalvaradoc@gmail.com", archivo: archivoCreado }, 1)
-        } else {
-            enviarCorreo({ destinatario: "jordanoalvaradoc@gmail.com" }, 2)
+            await enviarCorreo({ destinatario: "jordanoalvaradoc@gmail.com", archivo: archivoCreado, carpeta: validacionBucket?.toString() }, 1)
+        }
+
+        if (errores.length > 0) {
+            // await enviarCorreo({ destinatario: "jordanoalvaradoc@gmail.com", mensajeError: resultados[0].mensaje }, 2)
+            await enviarCorreo({ destinatario: "jordanoalvaradoc@gmail.com", mensajeError: errores.join(", ") }, 2)
+            throw `Se detecto errores en el proceso`
+
         }
 
     } catch (error) {
-        console.log('Error en preparación de carpeta zip:', error);
-        throw new Error(`Error en preparacion: ${error}`)
+        // console.log('Error en preparación de carpeta zip:', error);
+        throw `\nError en preparacion`
     }
 }
 
-//si funciona la sincronizacion, ver como sacar el loading y valdiar la sincronizacion completa
 async function sincronizacionAws(carpetaSincronizar: string) {
     try {
 

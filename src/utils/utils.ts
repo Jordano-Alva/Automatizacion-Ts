@@ -40,10 +40,10 @@ export function formatSize(bytes: number): string {
     }
 }
 
-export function htmlAEnviar(archivos: string[], carpeta: string) {
+export function htmlAEnviar(archivos: string[], carpeta: string, mensajeError:string = '') {
     return {
         success: htmlSuccess(archivos, carpeta),
-        error: htmlError(archivos, carpeta)
+        error: htmlError(mensajeError, carpeta)
     }
 }
 
