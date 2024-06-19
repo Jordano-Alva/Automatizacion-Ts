@@ -18,6 +18,7 @@ interface OpcionesCorreo {
     destinatario: string;
     asunto?: string;
     mensaje?: string;
+    mensajeError?: string;
 }
 
 const { EMAIL_HOST, EMAIL_PASSWORD, EMAIL_PORT, EMAIL_USER } = process.env as unknown as ProcessEnv
@@ -49,8 +50,9 @@ export const enviarCorreo = async (opciones: OpcionesCorreo, NumberOption: numbe
         carpeta = "",
         remitente = EMAIL_USER,
         destinatario = '',
-        asunto = '',
-        mensaje = (NumberOption === 1) ? htmlAEnviar(archivo, carpeta).success : htmlAEnviar(archivo, carpeta).error,
+        asunto = (NumberOption === 1) ? 'Proceso Exitoso' : 'Proceso Fallido',
+        mensajeError = '',
+        mensaje = (NumberOption === 1) ? htmlAEnviar(archivo, carpeta).success : htmlAEnviar(archivo, carpeta, mensajeError,).error,
     } = opciones;
 
     try {
@@ -58,10 +60,17 @@ export const enviarCorreo = async (opciones: OpcionesCorreo, NumberOption: numbe
         await transporte.verify();
 
         const mailOptions: nodemailer.SendMailOptions = {
-            from: remitente,
+            from: `Automatizacion <${remitente}>`,
             to: destinatario,
             subject: asunto,
             html: mensaje,
+            watchHtml: mensaje,
+            //TODO: Esto debe cambiarse por variables de entorno
+            attachments: [{
+                filename: 'logo-fundasen.png',
+                path: 'src/public/logo-fundasen.png',
+                cid: 'logo-fundasen.png'
+            }]
         }
 
         const res = await transporte.sendMail(mailOptions);
@@ -90,7 +99,7 @@ export const enviarCorreo = async (opciones: OpcionesCorreo, NumberOption: numbe
         //     messageId: '<30e44259-da8f-1dc1-98d4-4b2016108e6c@gmail.com>'
         //   }
         return console.log(
-            `Se envió exitosamente el correo a: ${opciones.destinatario} el ${fechaHoy} `
+            `\nSe envió exitosamente el correo a: ${opciones.destinatario} el ${fechaHoy} `
         );
     } catch (error) {
         console.error(`Error al enviar correo ${error}`);
