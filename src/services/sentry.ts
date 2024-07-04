@@ -17,22 +17,3 @@ Sentry.init({
 });
 
 export { Sentry };
-
-// export const transaction = Sentry.startSpan({
-//   op: "test",
-//   name: "My First Test Transaction",
-// },function(){
-
-// });
-
-
-// Sentry.startSpan({
-//   op: "test",
-//   name: "My First Test Span",
-// }, () => {
-//   try {
-//     foo();
-//   } catch (e) {
-//     Sentry.captureException(e);
-//   }
-// });
