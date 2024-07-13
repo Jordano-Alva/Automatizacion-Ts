@@ -1,5 +1,13 @@
 import { fechaHoy } from "../../../utils/utils";
 
+/**
+ * Generates an HTML email template for a successful automated process.
+ *
+ * @param archivos - An array of file names that were uploaded to the AWS-S3 bucket.
+ * @param carpeta - The name of the AWS-S3 bucket where the files were stored.
+ * @param fecha - The date the process was completed, defaults to the current date.
+ * @returns An HTML string representing the email template.
+ */
 export const htmlSuccess = (archivos: string[], carpeta: string, fecha: string = fechaHoy) => {
     const archivosList = archivos.map((archivo) => `<li>${archivo}</li>`).join("");
 

@@ -1,5 +1,12 @@
 import { fechaHoy } from "../../../utils/utils";
 
+/**
+ * Generates an HTML email template for an error notification.
+ *
+ * @param {string} mensajeError - The error message to be displayed in the email.
+ * @param {string} [fecha=fechaHoy] - The date of the error, defaulting to the current date.
+ * @returns {string} The HTML email template with the error message and other details.
+ */
 export const htmlError = (mensajeError: string, fecha: string = fechaHoy) => {
     // const archivosList = archivos.map((archivo) => `<li>${archivo}</li>`).join("");
     let ruta;

@@ -1,6 +1,6 @@
 import { CronJob } from "cron";
 import { fechaHoy } from "../utils/utils";
-import { preparacionZip } from "../services/AWS/aws.S3SyncClient";
+import { procesamientoYenvioArchivos } from "../services/AWS/aws.S3SyncClient";
 
 /**
  * Inicia un trabajo cron en la consola cada 5 segundos y detiene el trabajo después de la primera ejecución.
@@ -12,11 +12,11 @@ export const cronStart = async () => {
     const job = new CronJob(
         '* * * * * *',
         async () => {
-            job.start();
+            // job.start();
             console.info(`Iniciando el proceso automatizado el ${fechaHoy}`);
             //ejecucion del proceso a correr
             try {
-                await preparacionZip();
+                await procesamientoYenvioArchivos();
                 job.stop();
                 console.log('cronJob Terminado');
             } catch (error) {

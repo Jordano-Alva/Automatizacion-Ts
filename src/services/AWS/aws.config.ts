@@ -52,6 +52,12 @@ const dataEnvPruebas: EntornoPruebas = {
     }
 }
 
+/**
+ * Creates an S3 client with the provided AWS configuration.
+ *
+ * @param dataAws - The AWS configuration object containing the region, access key ID, and secret access key.
+ * @returns An S3 client instance configured with the provided AWS credentials and settings.
+ */
 export const createS3Client = (dataAws: EnvAws) => {
     return new S3Client({
         region: dataAws.region,
