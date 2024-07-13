@@ -12,6 +12,9 @@ const S3Client = createS3Client(dataAws);
 
 const { sync } = new S3SyncClient({ client: S3Client })
 
+
+
+
 export async function listarBuckets() {
     try {
         const listBucketsCommand = new ListBucketsCommand();
@@ -42,8 +45,9 @@ export async function listarBuckets() {
     }
 };
 
+//TODO: Cambiar el nombre  de la funcion por uno mas descriptivo
 
-export async function preparacionZip() {
+export async function procesamientoYenvioArchivos() {
 
     try {
         //!Debo validar que exista el bucket, si no existe debo crearlo
@@ -78,12 +82,12 @@ export async function preparacionZip() {
 
         if (archivoCreado.length > 0) {
             //!en la opcion carpeta, debo retornar Bucket, modificar lo del correo
-            await enviarCorreo({ destinatario: "jordanoalvaradoc@gmail.com", archivo: archivoCreado, carpeta: validacionBucket?.toString() }, 1)
+            await enviarCorreo({ destinatario: process.env.CORREO_NOTIFICACION!, archivo: archivoCreado, carpeta: validacionBucket?.toString() }, 1)
         }
 
         if (errores.length > 0) {
             // await enviarCorreo({ destinatario: "jordanoalvaradoc@gmail.com", mensajeError: resultados[0].mensaje }, 2)
-            await enviarCorreo({ destinatario: "jordanoalvaradoc@gmail.com", mensajeError: errores.join(", ") }, 2)
+            await enviarCorreo({ destinatario: process.env.CORREO_NOTIFICACION!, mensajeError: errores.join(", ") }, 2)
             throw `Se detecto errores en el proceso`
 
         }
