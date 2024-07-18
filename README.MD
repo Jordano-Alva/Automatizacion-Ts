@@ -1,50 +1,112 @@
-# Nombre del Proyecto
-Automatización de subida de archivos en AWS - Bucket
+# Automatización de Subida de Archivos a AWS S3
 
-## Descripcion del Proyecto
-Este proyecto automatiza la subida de archivos a un Bucket de AWS S3, proporcionando una solución eficiente para la gestión de archivos en la nube. Incluye capacidades de monitoreo con Sentry y envíos de notificaciones por correo electrónico utilizando Nodemailer
+## Descripción del Proyecto
 
-## Funciones Principales
-- **Subida de Archivos a  S3:** Automatiza la carga de archivos al Bucket de AWS S3 configurado.
-- **Monitoreo de Errores:** Integra Sentry para el seguimiento y monitoreo de errores en el código.
-- **Notificaciones por Correo Electrónico:** Utiliza Nodemailer para enviar notificaciones por correo electrónico en caso de errores o eventos importantes.
-
+Este proyecto proporciona una herramienta automatizada para subir archivos a un bucket de AWS S3, facilitando la gestión de archivos en la nube de manera eficiente y segura. Incluye características como monitoreo con Sentry y notificaciones por correo electrónico mediante Nodemailer, optimizando la operación y supervisión de las cargas de archivos.
 
 ## Instalación
 
+### Prerrequisitos
+
+Antes de comenzar, asegúrate de tener una cuenta en AWS y crear un bucket en S3. También necesitarás cuentas en Sentry y un servicio de correo electrónico que soporte SMTP para enviar notificaciones.
+
 ### Clonar el repositorio
-`git clone https://github.com/Jordano-Alva/Automatizacion-Ts.git`
+
+```bash
+git clone https://github.com/Jordano-Alva/Automatizacion-Ts.git`
+```
 
 ### Instalar dependencias
-`npm install`
 
-### Creación de archivo .env
+Instala las dependencias necesarias con npm:
 
-Dentro del directorio, copiar el `.env.template` y renombrarlo a `.env`. Modificar los valores del archivo `.env` a los correspondientes.
+```bash
+npm install
+```
 
-Considerar que se debe contar con una cuenta de [AWS](https://aws.amazon.com/) y contar con un Bucket en [AWS S3](https://aws.amazon.com/s3/). Además, es necesario tener los accesos respectivos de lectura y escritura en [AWS IAM](https://aws.amazon.com/iam/):
+### Configuración de Variables de Entorno
 
-- **Lectura:**
-  - GetObject
-- **Escritura:**
-  - PutObject
-- **Lista:**
-  - ListBucket
-  - ListAllMyBuckets
+Copia el archivo `.env.template` y crea uno nuevo bajo el nombre de `.env` y configura las variables con tus credenciales:
+
+#### Variables generales
+
+-   CORREO_NOTIFICACION: Tu correo donde llegara la notificacion del estado del proceso.
+-   RUTA_CARPETA: Tu ruta de carpeta principal.
+-   NOMBRE_CARPETA: Tu carpeta que se encuentran los archivos a subir.
+-   NOMBRE_CARPETA_A_CREAR: Tu nombre de la nueva carpeta que se creara.
+
+#### Variables de correo electrónico
+
+-   EMAIL_HOST: Tu servidor SMTP.
+-   EMAIL_USER: Tu usuario de correo electrónico.
+-   EMAIL_PASSWORD: Tu contraseña de aplicacion (si es google, ver video) [Video](http://surl.li/jlwgir)
+-   EMAIL_PORT= Tu puerto del servidor SMTP
+
+#### Variables de AWS
+
+AWS_BUCKET_NAME_BUCKET: Tu nombre del bucket S3
+AWS_BUCKET_REGION_BUCKET: Tu region del bucket
+AWS_BUCKET_USER_IAM_BUCKET: Tu usuario configurado en [AWS IAM](https://aws.amazon.com/iam/)
+
+<!-- AWS_BUCKET_PASSWORD_IAM_BUCKET: Tu contraseña de acceso configurada -->
+
+AWS_BUCKET_PUBLIC_KEY_JORDANO: Tu contraseña publica obtenida del IAM
+AWS_BUCKET_SECRET_KEY_JORDANO: Tu contraseña publica obtenida del IAM
+
+Las variables de entorno de AWS deben iniciar con el prefijo _'AWS*BUCKET*'_
+
+Asegurate de los accesos respectivos de lectura y escritura en [AWS IAM](https://aws.amazon.com/iam/):
+
+-   **Lectura:**
+    -   GetObject
+-   **Escritura:**
+    -   PutObject
+-   **Lista:**
+    -   ListBucket
+    -   ListAllMyBuckets
 
 Se debe contar con una cuenta de [Sentry](https://sentry.io/) para el monitoreo de código.
 
-Se debe contar con una cuenta para envio de correos que puede ser configurado con cualquier servicio de correo electrónico.
+FALTA CONFIGURAR Y DEFINIR VARIABLES DE ENTORNO
 
+[!CAUTION]
+De no haber configurado correctamente una variable de entorno, esto arroja un error y cerrara el proceso.
 
 ### Ejecutar
-- `npm run build`
-- `npm run start`
 
-## Complementos
+Compila el proyecto y ejecuta el proceso con los siguientes comandos:
 
-- [AWS](https://aws.amazon.com/) - Servicio en la nube
-- [AWS S3](https://aws.amazon.com/s3/) - Servicio de almacenamiento de objetos en la nube
-- [Sentry](https://sentry.io/) - Monitoreo de código
-- [Nodemailer](https://nodemailer.com/) - Envío de correos
+```bash
+npm run build  # Compila el proyecto
+npm run start  # Ejecuta la aplicación
+```
 
+## Función Principal: procesamientoYenvioArchivos
+
+### Descripción
+
+`procesamientoYenvioArchivos` es una función asíncrona que se encarga de validar la existencia de un bucket en AWS, comprimir archivos, sincronizarlos con AWS y enviar notificaciones por correo electrónico sobre el estado del proceso.
+
+### Pasos de la Función
+
+1. **Validación del Bucket:**
+    - Se utiliza la función `listarBuckets` para validar la conexion y existencia del bucket. Si no existe, lanza un error.
+2. **Compresión de Archivos:**
+    - La función `compresionZip` se encarga de comprimir los archivos y devolver los resultados de la compresión.
+    - **(1) Parametro:**
+         1. nombreCarpetaACrear (path:string): Carpeta donde se guardaran los archivos comprimidos y se sincronizara con Aws
+3. **Sincronización con AWS:**
+    - Para cada archivo comprimido, si la validación es exitosa, se realiza la sincronización con AWS usando la función `sincronizacionAws`. Si la sincronización falla, se registra un error y se detiene el proceso.
+    - **(2) Parametros:**
+        1. carpetaSincronizar (string): Ruta a la carpeta que se debe sincronizar con AWS S3.
+        2. nombreBucket (string): Nombre del depósito remoto para sincronizar el bucket, este se encuentra dentro de las propiedades del bucket, en la pestaña de propiedades, en información general sobre el bucket 'Nombre de recurso de Amazon (ARN)' ej: arn:aws:s3:::nombreBucket
+4. **Notificación por Correo:**
+    - La funcion `enviarCorreo` es una función que se encarga de enviar notificaciones por correo electrónico, esto segun el resultado de subida de archivos:
+        - Si se crean archivos exitosamente, se envía una notificación por correo con los detalles.
+        - Si se detectan errores durante el proceso, se envía un correo con la lista de errores y se lanza un error.
+
+## Complementos y Herramientas Utilizadas
+
+-   [AWS S3](https://aws.amazon.com/s3/) - Servicio de almacenamiento de objetos en la nube
+-   [Sentry](https://sentry.io/) - Herramienta de monitoreo de errores en tiempo real
+-   [Nodemailer](https://nodemailer.com/) - Módulo de Node.js para enviar correos electrónicos fácilmente.

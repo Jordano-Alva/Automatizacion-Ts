@@ -5,6 +5,7 @@ import { CreateBucketCommand, ListBucketsCommand } from '@aws-sdk/client-s3';
 import { formatSize, progresoBarra } from '../../utils/utils';
 import { compresionZip } from '../adm-zip';
 import { enviarCorreo } from '../../nodemailer';
+import { variablesEntorno } from '../../env';
 dotenv.config();
 
 const dataAws = dataConexion(1);
@@ -12,6 +13,7 @@ const S3Client = createS3Client(dataAws);
 
 const { sync } = new S3SyncClient({ client: S3Client })
 
+const { AWS_BUCKET_NAME_JORDANO } = variablesEntorno
 
 
 
@@ -45,7 +47,6 @@ export async function listarBuckets() {
     }
 };
 
-//TODO: Cambiar el nombre  de la funcion por uno mas descriptivo
 
 export async function procesamientoYenvioArchivos() {
 
@@ -98,7 +99,8 @@ export async function procesamientoYenvioArchivos() {
     }
 }
 
-async function sincronizacionAws(carpetaSincronizar: string) {
+//TODO: nombreBucket, ponerlo como variable de entorno
+async function sincronizacionAws(carpetaSincronizar: string, nombreBucket: string = AWS_BUCKET_NAME_JORDANO!) {
     try {
 
         const monitor = new TransferMonitor()
@@ -132,7 +134,8 @@ async function sincronizacionAws(carpetaSincronizar: string) {
             // console.log(`Current Size: ${current}, Total Size: ${total}`);
         });
         // const res = await sync(`${process.env.HOMEPATH}\\Downloads\\Zip2`, 's3://my-aws-bucket-backup', { monitor })
-        const res = await sync(carpetaSincronizar, 's3://my-aws-bucket-backup', { monitor })
+        //TODO: Pasar el my como variable de entorno
+        const res = await sync(carpetaSincronizar, `s3://${nombreBucket}`, { monitor })
         return res;
         //ejemplo de res:
         // {

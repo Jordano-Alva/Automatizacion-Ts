@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import * as nodemailer from 'nodemailer'
 import { fechaHoy, htmlAEnviar } from './utils/utils';
+import {variablesEntorno} from './env';
 import { htmlSuccess } from './modules/email/template/htmlSuccess.template';
 
 
@@ -21,7 +22,7 @@ interface OpcionesCorreo {
     mensajeError?: string;
 }
 
-const { EMAIL_HOST, EMAIL_PASSWORD, EMAIL_PORT, EMAIL_USER } = process.env as unknown as ProcessEnv
+const { EMAIL_HOST, EMAIL_PASSWORD, EMAIL_PORT, EMAIL_USER } = variablesEntorno as unknown as ProcessEnv
 
 if (!EMAIL_HOST || !EMAIL_PASSWORD || !EMAIL_PORT || !EMAIL_USER) {
     throw new Error("Faltan variables de entorno")

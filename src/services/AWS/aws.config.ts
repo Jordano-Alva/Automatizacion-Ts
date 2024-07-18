@@ -3,6 +3,8 @@ import { NodeHttpHandler } from '@smithy/node-http-handler';
 import https from 'https';
 import dotenv from 'dotenv';
 
+//TODO: DEBO SACAR LAS VARIABLES DE ENTORNO DE UNA MANERA GENERALIZADA
+
 dotenv.config();
 
 

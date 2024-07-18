@@ -18,7 +18,7 @@ interface ResultadoCompresion {
     directorioCarpeta?: string,
 }
 
-export async function compresionZip(nombreCarpetaOrigen: string = zipCreado, nombreArchivoZip: string = 'Test.zip') {
+export async function compresionZip(nombreCarpetaACrear: string = zipCreado, nombreArchivoZip: string = 'Test.zip') {
 
     try {
         console.time('Compresion')
@@ -28,7 +28,7 @@ export async function compresionZip(nombreCarpetaOrigen: string = zipCreado, nom
         const archivosAFiltrar = filtrarArchivos(directorio, 'all');
         const archivosPorFecha = new Map<string, string[]>();
 
-        crearCarpeta(nombreCarpetaOrigen)
+        crearCarpeta(nombreCarpetaACrear)
 
 
         //Agrupar archivos por fecha de creacion
@@ -58,14 +58,14 @@ export async function compresionZip(nombreCarpetaOrigen: string = zipCreado, nom
                 barraProgress.increment();  // Incrementar la barra de progreso
             });
 
-            const rutaArchivoZip = path.join(nombreCarpetaOrigen, `${fecha}.zip`);
+            const rutaArchivoZip = path.join(nombreCarpetaACrear, `${fecha}.zip`);
             instanciaZip.writeZip(rutaArchivoZip);
 
             resultado.push({
                 mensaje: "Carpeta comprimida correctamente.",
                 validacion: true,
                 carpetaCreada: rutaArchivoZip,
-                directorioCarpeta: nombreCarpetaOrigen,
+                directorioCarpeta: nombreCarpetaACrear,
             });
         });
         barraProgress.stop();
