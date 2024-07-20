@@ -1,15 +1,18 @@
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import * as Sentry from "@sentry/node";
+import { variablesEntorno } from "../config/env";
 
 //*PRUEBAS DE SENTRY 
 //TODO: JALAR CON VARIABLES DE ENTORNO
 
+const { DSN_SENTRY, DSN_ENVIROMENT } = variablesEntorno
+
 Sentry.init({
-  dsn: "https://294831f35b3820512130fc9b656b6390@o4507108968300544.ingest.us.sentry.io/4507348789886976",
+  dsn: DSN_SENTRY,
   integrations: [
     nodeProfilingIntegration(),
   ],
-  environment: 'Dev',
+  environment: DSN_ENVIROMENT,
   // Performance Monitoring
   tracesSampleRate: 1.0, //  Capture 100% of the transactions
 

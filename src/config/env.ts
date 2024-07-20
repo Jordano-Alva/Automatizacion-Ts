@@ -18,6 +18,9 @@ interface ProcessEnv {
     AWS_BUCKET_PASSWORD: string
     AWS_BUCKET_PUBLIC_KEY: string
     AWS_BUCKET_SECRET_KEY: string
+
+    DSN_SENTRY: string
+    DSN_ENVIROMENT: string
 }
 
 
@@ -29,7 +32,9 @@ const varEnvRequeridas: { [key: string]: string } = {
     CORREO_NOTIFICACION: 'CORREO_NOTIFICACION',
     RUTA_CARPETA: 'RUTA_CARPETA',
     NOMBRE_CARPETA: 'NOMBRE_CARPETA',
-    NOMBRE_CARPETA_A_CREAR: 'NOMBRE_CARPETA_A_CREAR'
+    NOMBRE_CARPETA_A_CREAR: 'NOMBRE_CARPETA_A_CREAR',
+    DSN_SENTRY: 'DSN_SENTRY',
+    DSN_ENVIROMENT: 'DSN_ENVIROMENT'
 }
 
 const prefijoAws: string = 'AWS_BUCKET_';

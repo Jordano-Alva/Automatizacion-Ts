@@ -30,28 +30,25 @@ Copia el archivo `.env.template` y crea uno nuevo bajo el nombre de `.env` y con
 
 #### Variables generales
 
--   CORREO_NOTIFICACION: Tu correo donde llegara la notificacion del estado del proceso.
--   RUTA_CARPETA: Tu ruta de carpeta principal.
--   NOMBRE_CARPETA: Tu carpeta que se encuentran los archivos a subir.
--   NOMBRE_CARPETA_A_CREAR: Tu nombre de la nueva carpeta que se creara.
+-   CORREO_NOTIFICACION: Correo donde llegara la notificacion del estado del proceso.
+-   RUTA_CARPETA: Ruta de carpeta principal.
+-   NOMBRE_CARPETA: Carpeta que se encuentran los archivos a subir.
+-   NOMBRE_CARPETA_A_CREAR: Nombre de la nueva carpeta que se creara.
 
 #### Variables de correo electrónico
 
--   EMAIL_HOST: Tu servidor SMTP.
--   EMAIL_USER: Tu usuario de correo electrónico.
--   EMAIL_PASSWORD: Tu contraseña de aplicacion (si es google, ver video) [Video](http://surl.li/jlwgir)
--   EMAIL_PORT= Tu puerto del servidor SMTP
+-   EMAIL_HOST: Servidor SMTP.
+-   EMAIL_USER: Usuario de correo electrónico.
+-   EMAIL_PASSWORD: Contraseña de aplicacion (si es google, ver video) [Video](http://surl.li/jlwgir)
+-   EMAIL_PORT= Puerto del servidor SMTP
 
 #### Variables de AWS
 
-AWS_BUCKET_NAME_BUCKET: Tu nombre del bucket S3
-AWS_BUCKET_REGION_BUCKET: Tu region del bucket
-AWS_BUCKET_USER_IAM_BUCKET: Tu usuario configurado en [AWS IAM](https://aws.amazon.com/iam/)
-
-<!-- AWS_BUCKET_PASSWORD_IAM_BUCKET: Tu contraseña de acceso configurada -->
-
-AWS_BUCKET_PUBLIC_KEY_JORDANO: Tu contraseña publica obtenida del IAM
-AWS_BUCKET_SECRET_KEY_JORDANO: Tu contraseña publica obtenida del IAM
+AWS_BUCKET_NAME_BUCKET: Nombre del bucket S3
+AWS_BUCKET_REGION_BUCKET: Region del bucket
+AWS_BUCKET_USER: Usuario configurado en [AWS IAM](https://aws.amazon.com/iam/)
+AWS_BUCKET_PUBLIC_KEY: Contraseña publica obtenida del IAM
+AWS_BUCKET_SECRET_KEY: Contraseña publica obtenida del IAM
 
 Las variables de entorno de AWS deben iniciar con el prefijo _'AWS*BUCKET*'_
 
@@ -67,7 +64,10 @@ Asegurate de los accesos respectivos de lectura y escritura en [AWS IAM](https:/
 
 Se debe contar con una cuenta de [Sentry](https://sentry.io/) para el monitoreo de código.
 
-FALTA CONFIGURAR Y DEFINIR VARIABLES DE ENTORNO
+#### Variables de Sentry
+
+DSN_SENTRY: La url generada por Sentry
+DSN_ENVIROMENT: Por defecto se coloca production
 
 [!CAUTION]
 De no haber configurado correctamente una variable de entorno, esto arroja un error y cerrara el proceso.
@@ -81,27 +81,27 @@ npm run build  # Compila el proyecto
 npm run start  # Ejecuta la aplicación
 ```
 
-## Función Principal: procesamientoYenvioArchivos
+## Función Principal: procesamientoYenvioArchivos()
 
 ### Descripción
 
-`procesamientoYenvioArchivos` es una función asíncrona que se encarga de validar la existencia de un bucket en AWS, comprimir archivos, sincronizarlos con AWS y enviar notificaciones por correo electrónico sobre el estado del proceso.
+`procesamientoYenvioArchivos()` es una función asíncrona que se encarga de validar la existencia de un bucket en AWS, comprimir archivos, sincronizarlos con AWS y enviar notificaciones por correo electrónico sobre el estado del proceso.
 
 ### Pasos de la Función
 
 1. **Validación del Bucket:**
-    - Se utiliza la función `listarBuckets` para validar la conexion y existencia del bucket. Si no existe, lanza un error.
+    - Se utiliza la función `listarBuckets()` para validar la conexion y existencia del bucket. Si no existe, lanza un error.
 2. **Compresión de Archivos:**
-    - La función `compresionZip` se encarga de comprimir los archivos y devolver los resultados de la compresión.
+    - La función `compresionZip()` se encarga de comprimir los archivos y devolver los resultados de la compresión.
     - **(1) Parametro:**
-         1. nombreCarpetaACrear (path:string): Carpeta donde se guardaran los archivos comprimidos y se sincronizara con Aws
+        1. nombreCarpetaACrear (path:string): Carpeta donde se guardaran los archivos comprimidos y se sincronizara con Aws
 3. **Sincronización con AWS:**
-    - Para cada archivo comprimido, si la validación es exitosa, se realiza la sincronización con AWS usando la función `sincronizacionAws`. Si la sincronización falla, se registra un error y se detiene el proceso.
+    - Para cada archivo comprimido, si la validación es exitosa, se realiza la sincronización con AWS usando la función `sincronizacionAws()`. Si la sincronización falla, se registra un error y se detiene el proceso.
     - **(2) Parametros:**
         1. carpetaSincronizar (string): Ruta a la carpeta que se debe sincronizar con AWS S3.
         2. nombreBucket (string): Nombre del depósito remoto para sincronizar el bucket, este se encuentra dentro de las propiedades del bucket, en la pestaña de propiedades, en información general sobre el bucket 'Nombre de recurso de Amazon (ARN)' ej: arn:aws:s3:::nombreBucket
 4. **Notificación por Correo:**
-    - La funcion `enviarCorreo` es una función que se encarga de enviar notificaciones por correo electrónico, esto segun el resultado de subida de archivos:
+    - La funcion `enviarCorreo()` es una función que se encarga de enviar notificaciones por correo electrónico, esto segun el resultado de subida de archivos:
         - Si se crean archivos exitosamente, se envía una notificación por correo con los detalles.
         - Si se detectan errores durante el proceso, se envía un correo con la lista de errores y se lanza un error.
 
