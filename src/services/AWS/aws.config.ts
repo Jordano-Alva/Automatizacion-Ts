@@ -8,7 +8,7 @@ import { variablesEntorno } from '../../config/env';
 
 dotenv.config();
 
-const {AWS_BUCKET_NAME,AWS_BUCKET_REGION, AWS_BUCKET_PUBLIC_KEY, AWS_BUCKET_SECRET_KEY } = variablesEntorno
+const {AWS_BUCKET_REGION, AWS_BUCKET_PUBLIC_KEY, AWS_BUCKET_SECRET_KEY } = variablesEntorno
 /**
  * Crea un controlador HTTP personalizado para AWS SDK, configurando el agente HTTPS con las siguientes configuraciones:
  * - `keepAlive`: habilita el mantenimiento de conexión HTTP, lo que puede mejorar el rendimiento al reutilizar las conexiones TCP existentes.
@@ -38,8 +38,7 @@ interface EnvAws {
 }
 
 interface EntornoPruebas {
-    datosJordano: EnvAws;
-    datosAlex: EnvAws;
+    datosAws: EnvAws;
 }
 
 
@@ -49,22 +48,13 @@ interface EntornoPruebas {
  */
 
 const dataEnvPruebas: EntornoPruebas = {
-    //* 1 =Jordano, 2 = Alex
-    datosJordano: {
-        region: process.env.AWS_BUCKET_REGION_JORDANO || '',
-        Bucket: 'Jordano',
-        credentials: {
-            accessKeyId: process.env.AWS_BUCKET_PUBLIC_KEY_JORDANO || '',
-            secretAccessKey: process.env.AWS_BUCKET_SECRET_KEY_JORDANO || ''
-        }
-    },
 
-    datosAlex: {
-        region: process.env.AWS_BUCKET_REGION_ALEX || '',
-        Bucket: 'Alex',
+    datosAws: {
+        region: AWS_BUCKET_REGION || '',
+        Bucket: 'Aws',
         credentials: {
-            accessKeyId: process.env.AWS_BUCKET_PUBLIC_KEY_ALEX || '',
-            secretAccessKey: process.env.AWS_BUCKET_SECRET_KEY_ALEX || ''
+            accessKeyId: AWS_BUCKET_PUBLIC_KEY || '',
+            secretAccessKey: AWS_BUCKET_SECRET_KEY || ''
         }
     }
 }
@@ -94,5 +84,5 @@ export const createS3Client = (dataAws: EnvAws) => {
  * @returns El objeto de configuración de AWS para la fuente de datos especificada.
  */
 export const dataConexion = (numero: number) => {
-    return dataEnvPruebas[`datos${numero === 1 ? "Jordano" : "Alex"}`]
+    return dataEnvPruebas.datosAws
 }

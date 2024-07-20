@@ -13,7 +13,7 @@ const S3Client = createS3Client(dataAws);
 
 const { sync } = new S3SyncClient({ client: S3Client })
 
-const { AWS_BUCKET_NAME_JORDANO: AWS_BUCKET_NAME } = variablesEntorno
+const { AWS_BUCKET_NAME } = variablesEntorno
 
 
 
@@ -121,7 +121,7 @@ async function sincronizacionAws(carpetaSincronizar: string, nombreBucket: strin
 
                 const barraProgreso = progresoBarra(porcentaje, 20);
 
-                let mensaje = `\rSubiendo:[${barraProgreso}] ${porcentaje}%  ${currentSize} / ${totalSize} `;
+                let mensaje = `\rSubiendo:[${barraProgreso}] ${porcentaje}%  ${currentSize} `;
 
                 const longitudMensajeMaximo = 80;
 
