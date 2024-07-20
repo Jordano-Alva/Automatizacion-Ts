@@ -13,7 +13,7 @@ const S3Client = createS3Client(dataAws);
 
 const { sync } = new S3SyncClient({ client: S3Client })
 
-const { AWS_BUCKET_NAME } = variablesEntorno
+const { AWS_BUCKET_NAME, CORREO_NOTIFICACION } = variablesEntorno
 
 
 
@@ -82,16 +82,17 @@ export async function procesamientoYenvioArchivos() {
         }
 
         if (archivoCreado.length > 0) {
-            await enviarCorreo({ destinatario: process.env.CORREO_NOTIFICACION!, archivo: archivoCreado, carpeta: validacionBucket?.toString() }, 1)
+            await enviarCorreo({ destinatario: CORREO_NOTIFICACION!, archivo: archivoCreado, carpeta: validacionBucket?.toString() }, 1)
         }
 
         if (errores.length > 0) {
-            await enviarCorreo({ destinatario: process.env.CORREO_NOTIFICACION!, mensajeError: errores.join(", ") }, 2)
+            await enviarCorreo({ destinatario: CORREO_NOTIFICACION!, mensajeError: errores.join(", ") }, 2)
             throw `Se detecto errores en el proceso`
 
         }
 
     } catch (error) {
+        await enviarCorreo({ destinatario: CORREO_NOTIFICACION!, mensajeError: 'Existe problemas con la verificacion del Bucket, verificar las variables de Entorno de AWS' }, 2)
         throw `\nError en preparacion`
     }
 }
