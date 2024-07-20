@@ -110,3 +110,7 @@ npm run start  # Ejecuta la aplicación
 -   [AWS S3](https://aws.amazon.com/s3/) - Servicio de almacenamiento de objetos en la nube
 -   [Sentry](https://sentry.io/) - Herramienta de monitoreo de errores en tiempo real
 -   [Nodemailer](https://nodemailer.com/) - Módulo de Node.js para enviar correos electrónicos fácilmente.
+
+## Licencia
+
+Este proyecto está licenciado bajo la Licencia MIT. Para más detalles, consulta el archivo LICENSE en el repositorio.
