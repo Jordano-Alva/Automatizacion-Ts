@@ -1,5 +1,5 @@
 import AdmZip from "adm-zip";
-import { fechaHoy, filtrarArchivos } from "../utils/utils";
+import { fechaLocal, filtrarArchivos } from "../utils/utils";
 import { crearCarpeta, formatearFecha, leerContenidoDirectorio, obtenerFechaCreacion } from "./fileSystem";
 import path from "path";
 import dotenv from 'dotenv';
@@ -18,11 +18,19 @@ interface ResultadoCompresion {
     directorioCarpeta?: string,
 }
 
+/**
+ * Comprime el contenido del directorio `urlPathZip` en una serie de archivos ZIP, y cada archivo ZIP contiene los archivos de un rango de fechas específico.
+ *
+ * @param {string} [nombreCarpetaACrear=zipCreado] - El nombre del directorio donde crear los archivos ZIP.
+ * @param {string} [nombreArchivoZip='Test.zip'] - El nombre del archivo ZIP a crear.
+ * @returns {Promise<ResultadoCompresion[]>} - Una matriz de objetos `ResultadoCompresion`, cada uno de los cuales contiene información sobre el proceso de compresión para un rango de fechas específico.
+ */
 export async function compresionZip(nombreCarpetaACrear: string = zipCreado, nombreArchivoZip: string = 'Test.zip') {
 
     try {
-        console.time('Compresion')
-        console.log(`Iniciando proceso de compresion el ${fechaHoy}`)
+        console.time('Duracion de Compresion')
+        const horaInicio = fechaLocal(new Date());
+        console.log(`Iniciando proceso de compresion el ${horaInicio}`)
 
         const directorio = leerContenidoDirectorio(urlPathZip);
         const archivosAFiltrar = filtrarArchivos(directorio, 'all');
@@ -69,12 +77,12 @@ export async function compresionZip(nombreCarpetaACrear: string = zipCreado, nom
             });
         });
         barraProgress.stop();
-        console.log(`Terminado el proceso de Compresion el ${fechaHoy}`);
-        console.timeEnd('Compresion')
+        const horaFinal = fechaLocal(new Date());
+        console.log(`Terminado el proceso de Compresion el ${horaFinal}`);
+        console.timeEnd('Duracion de Compresion')
         return resultado
 
     } catch (error) {
-        // console.error(`Error al comprimir la carpeta: ${error}`);
         return [{
             mensaje: `Error al comprimir la carpeta: ${error}`,
             validacion: false,

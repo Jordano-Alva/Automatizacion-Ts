@@ -1,14 +1,15 @@
-import { fechaHoy } from "../../../utils/utils";
+import { fechaLocal } from "../../../utils/utils";
+
 
 /**
- * Generates an HTML email template for a successful automated process.
+ * Genera una plantilla de correo electrónico HTML para un proceso automatizado exitoso.
  *
- * @param archivos - An array of file names that were uploaded to the AWS-S3 bucket.
- * @param carpeta - The name of the AWS-S3 bucket where the files were stored.
- * @param fecha - The date the process was completed, defaults to the current date.
- * @returns An HTML string representing the email template.
+ * @param archivos: una serie de nombres de archivos que se cargaron en el servicio AWS-S3.
+ * @param carpeta: el nombre del depósito donde se almacenaron los archivos.
+ * @param fecha - La fecha y hora en que se completó el proceso. El valor predeterminado es la hora local actual si no se proporciona.
+ * @returns La plantilla de correo electrónico HTML como una cadena.
  */
-export const htmlSuccess = (archivos: string[], carpeta: string, fecha: string = fechaHoy) => {
+export const htmlSuccess = (archivos: string[], carpeta: string, fecha: string = fechaLocal()) => {
     const archivosList = archivos.map((archivo) => `<li>${archivo}</li>`).join("");
 
     return `

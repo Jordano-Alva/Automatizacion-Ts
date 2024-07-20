@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 import { CreateBucketCommand, ListBucketsCommand } from '@aws-sdk/client-s3';
 import { formatSize, progresoBarra } from '../../utils/utils';
 import { compresionZip } from '../adm-zip';
-import { enviarCorreo } from '../../nodemailer';
-import { variablesEntorno } from '../../env';
+import { enviarCorreo } from '../../config/nodemailer';
+import { variablesEntorno } from '../../config/env';
 dotenv.config();
 
 const dataAws = dataConexion(1);
@@ -13,45 +13,45 @@ const S3Client = createS3Client(dataAws);
 
 const { sync } = new S3SyncClient({ client: S3Client })
 
-const { AWS_BUCKET_NAME_JORDANO } = variablesEntorno
+const { AWS_BUCKET_NAME_JORDANO: AWS_BUCKET_NAME } = variablesEntorno
 
 
 
+/**
+ * Enumera los nombres de todos los depósitos de S3 asociados con las credenciales de AWS configuradas.
+ *
+ * @returns {Promise<string[]>} Una matriz de nombres de depósitos o arroja un error si no se pudo obtener la lista.
+ */
 export async function listarBuckets() {
     try {
         const listBucketsCommand = new ListBucketsCommand();
         const { Buckets } = await S3Client.send(listBucketsCommand);
-        // const crearBucket = new CreateBucketCommand({"Bucket": 'prueba'})
-        // const response = await S3Client.send(crearBucket);
 
         if (!Buckets) throw new Error('No se pudo obtener la lista de Buckets')
 
-        //TODO: Considera crear el bucket
-        //TODO: validar el bucket
-
         return Buckets?.map((Bucket) => Bucket.Name)
 
-        // const listaBuckets = Buckets?.map((Bucket) => Bucket.Name)
-        // // const listDos = listaBuckets?.join("\n")
-        // const validacion = validacionBucket(Buckets)
-
-        // if (validacion) {
-        //     console.log({ validacion });
-        //     console.log(`Buckets: ${listaBuckets}`);
-        //     return { mensaje: listaBuckets, validacion: true };
-        // } else {
-        //     return { mensaje: "No existen buckets", validacion: false };
-        // }
     } catch (error) {
         throw new Error(`Error en Listar Buckets${error}`);
     }
 };
 
 
+/**
+ * Procesa y envía archivos a un depósito de AWS S3.
+ *
+ * Esta función realiza los siguientes pasos:
+ * 1. Comprueba si el depósito de AWS S3 configurado existe y lo crea si no es así.
+ * 2. Comprime archivos usando la función `compresionZip`.
+ * 3. Sincroniza los archivos comprimidos con el bucket de AWS S3 mediante la función `sincronizacionAws`.
+ * 4. Envía una notificación por correo electrónico con la lista de archivos cargados o cualquier error ocurrido durante el proceso.
+ *
+ * @returns {Promise<void>} Una promesa que se resuelve cuando se completa el procesamiento y la carga del archivo.
+ * @throws {Error} Si hay algún error durante el procesamiento o la carga del archivo.
+ */
 export async function procesamientoYenvioArchivos() {
 
     try {
-        //!Debo validar que exista el bucket, si no existe debo crearlo
         const validacionBucket = await listarBuckets();
         if (!validacionBucket) {
             throw new Error(`No se pudo validar el bucket`)
@@ -82,25 +82,30 @@ export async function procesamientoYenvioArchivos() {
         }
 
         if (archivoCreado.length > 0) {
-            //!en la opcion carpeta, debo retornar Bucket, modificar lo del correo
             await enviarCorreo({ destinatario: process.env.CORREO_NOTIFICACION!, archivo: archivoCreado, carpeta: validacionBucket?.toString() }, 1)
         }
 
         if (errores.length > 0) {
-            // await enviarCorreo({ destinatario: "jordanoalvaradoc@gmail.com", mensajeError: resultados[0].mensaje }, 2)
             await enviarCorreo({ destinatario: process.env.CORREO_NOTIFICACION!, mensajeError: errores.join(", ") }, 2)
             throw `Se detecto errores en el proceso`
 
         }
 
     } catch (error) {
-        // console.log('Error en preparación de carpeta zip:', error);
         throw `\nError en preparacion`
     }
 }
 
-//TODO: nombreBucket, ponerlo como variable de entorno
-async function sincronizacionAws(carpetaSincronizar: string, nombreBucket: string = AWS_BUCKET_NAME_JORDANO!) {
+
+/**
+ * Sincroniza archivos desde un directorio local a un depósito de AWS S3.
+ *
+ * @param {string} carpetaSincronizar - El directorio local a sincronizar.
+ * @param {string} [nombreBucket=AWS_BUCKET_NAME!] - El nombre del depósito de AWS S3 al que se sincronizará.
+ * @returns {Promise<{ creado: LocalObject[], actualizado: LocalObject[], eliminado: LocalObject[] }>}: un objeto que contiene los archivos que se crearon, actualizaron y eliminaron durante la sincronización.
+ * @throws {Error} - Si hay algún error durante el proceso de sincronización.
+ */
+async function sincronizacionAws(carpetaSincronizar: string, nombreBucket: string = AWS_BUCKET_NAME!) {
     try {
 
         const monitor = new TransferMonitor()
@@ -131,11 +136,10 @@ async function sincronizacionAws(carpetaSincronizar: string, nombreBucket: strin
 
 
             }
-            // console.log(`Current Size: ${current}, Total Size: ${total}`);
+
         });
-        // const res = await sync(`${process.env.HOMEPATH}\\Downloads\\Zip2`, 's3://my-aws-bucket-backup', { monitor })
-        //TODO: Pasar el my como variable de entorno
-        const res = await sync(carpetaSincronizar, `s3://${nombreBucket}`, { monitor })
+
+        const res = await sync(carpetaSincronizar, `s3://${nombreBucket}`, { monitor, filters: [{ exclude: (key) => key.endsWith('.txt') }] })
         return res;
         //ejemplo de res:
         // {

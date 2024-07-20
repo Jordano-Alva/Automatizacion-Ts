@@ -14,7 +14,7 @@
     "start": "node dist/index.js",
     "dev": "tsc && node dist/index.js"
   },
-  "author": "Jordano Alvarado",
+  "author": "Jordano Alvarado && Alex Aguilar",
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.591.0",

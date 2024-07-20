@@ -1,13 +1,13 @@
-import { fechaHoy } from "../../../utils/utils";
+import { fechaLocal } from "../../../utils/utils";
 
 /**
  * Generates an HTML email template for an error notification.
  *
  * @param {string} mensajeError - The error message to be displayed in the email.
- * @param {string} [fecha=fechaHoy] - The date of the error, defaulting to the current date.
+ * @param {string} [fecha=fechaLocal] - The date of the error, defaulting to the current date.
  * @returns {string} The HTML email template with the error message and other details.
  */
-export const htmlError = (mensajeError: string, fecha: string = fechaHoy) => {
+export const htmlError = (mensajeError: string, fecha: string = fechaLocal(new Date())) => {
     // const archivosList = archivos.map((archivo) => `<li>${archivo}</li>`).join("");
     let ruta;
     //Personalizacion de mensaje de error
@@ -63,7 +63,7 @@ export const htmlError = (mensajeError: string, fecha: string = fechaHoy) => {
     <body>
         <div class="container">
             <h2>NOTIFICACION DE PROCESO AUTOMATIZADO - ERROR</h2>
-            <p>Proceso finalizado el: ${fechaHoy}</p>
+            <p>Proceso finalizado el: ${fecha}</p>
             <p>El proceso ejecutado presentó el siguiente error: </p>
             <ul>${mensajeError}</ul>
             <div class="footer">

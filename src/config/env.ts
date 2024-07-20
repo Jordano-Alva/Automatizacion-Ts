@@ -34,6 +34,15 @@ const varEnvRequeridas: { [key: string]: string } = {
 
 const prefijoAws: string = 'AWS_BUCKET_';
 
+/**
+ * Valida las variables de entorno requeridas y devuelve un objeto con las variables de entorno válidas.
+ *
+ * @param varRequeridas: un objeto con los nombres de variables de entorno requeridos como claves y sus claves Process.env correspondientes como valores.
+ * @param prefijo: un prefijo para comprobar si hay variables de entorno adicionales.
+ * @param ProcessEnv: el objeto Process.env que contiene las variables de entorno.
+ * @returns Un objeto con las variables de entorno válidas.
+ * @throws Error si falta alguna variable de entorno requerida.
+ */
 const validacionVarEnv = (varRequeridas: { [key: string]: string }, prefijo: string, processEnv: NodeJS.ProcessEnv) => {
 
     const varEnvFaltantes: string[] = [];
