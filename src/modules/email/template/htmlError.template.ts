@@ -56,7 +56,7 @@ export const htmlError = (mensajeError: string, fecha: string = fechaLocal(new D
             .footer {
                 margin-top: 20px;
                 text-align: center;
-                color: #999;
+                color: #000000;
             }
         </style>
     </head>
@@ -67,7 +67,7 @@ export const htmlError = (mensajeError: string, fecha: string = fechaLocal(new D
             <p>El proceso ejecutado presentó el siguiente error: </p>
             <ul>${mensajeError}</ul>
             <div class="footer">
-                <img src="cid:logo-fundasen.png"; width="500" height="150"/>
+                <img src="cid:SISTEMAS.png"; width="500" height="150"/>
             </div>
         </div>
     </body>`;

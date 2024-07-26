@@ -72,9 +72,9 @@ export const enviarCorreo = async (opciones: OpcionesCorreo, NumberOption: numbe
             watchHtml: mensaje,
             //TODO: Esto debe cambiarse por variables de entorno
             attachments: [{
-                filename: 'logo-fundasen.png',
-                path: 'src/public/logo-fundasen.png',
-                cid: 'logo-fundasen.png'
+                filename: 'SISTEMAS.png',
+                path: 'src/public/SISTEMAS.png',
+                cid: 'SISTEMAS.png'
             }]
         }
 

@@ -46,7 +46,6 @@ export const htmlSuccess = (archivos: string[], carpeta: string, fecha: string =
             .footer {
                 margin-top: 20px;
                 text-align: center;
-                color: #999;
             }
         </style>
     </head>
@@ -60,7 +59,7 @@ export const htmlSuccess = (archivos: string[], carpeta: string, fecha: string =
                 ${archivosList} 
             </ul>
              <div class="footer">
-                <img src="cid:logo-fundasen.png"; width="500" height="150"/>
+                <img src="cid:SISTEMAS.png"; width="500" height="150"/>
             </div>
         </div>
     </body>`;

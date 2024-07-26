@@ -22,7 +22,7 @@ const httpHandler = new NodeHttpHandler({
     httpsAgent: new https.Agent({
         keepAlive: true,
         maxSockets: 300,//Se aumenta segun la carga de subida
-        timeout: 60000,//El tiempo que se debe antes de cerrar un socket inactivo
+        timeout: 120000,//El tiempo que se debe antes de cerrar un socket inactivo
     }),
     socketAcquisitionWarningTimeout: 2000//Ajustar tiempo para que se emita una adverntencia
 })
