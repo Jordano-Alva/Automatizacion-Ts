@@ -1,7 +1,27 @@
-import { fechaHoy } from "../../../utils/utils";
+import { fechaLocal } from "../../../utils/utils";
 
-export const htmlError = (archivos: string[], carpeta: string, fecha: string = fechaHoy) => {
-    const archivosList = archivos.map((archivo) => `<li>${archivo}</li>`).join("");
+/**
+ * Generates an HTML email template for an error notification.
+ *
+ * @param {string} mensajeError - The error message to be displayed in the email.
+ * @param {string} [fecha=fechaLocal] - The date of the error, defaulting to the current date.
+ * @returns {string} The HTML email template with the error message and other details.
+ */
+export const htmlError = (mensajeError: string, fecha: string = fechaLocal(new Date())) => {
+    // const archivosList = archivos.map((archivo) => `<li>${archivo}</li>`).join("");
+    let ruta;
+    //Personalizacion de mensaje de error
+    if (mensajeError.includes('scandir')) {
+        const mensaje = mensajeError.split(' ');
+        let rutaArc = mensaje[mensaje.length - 1];
+        ruta = `<li>No existe la carpeta : <u>${rutaArc}</u> en el directorio actual</li>`;
+        mensajeError = ruta
+    } else {
+        mensajeError = `<li>${mensajeError}</li>`;
+    }
+    //!Ver que funque lo del logo
+    // const rutaImag = '../../../public/logo-fundasen.png'
+
     return `
     <head>
         <meta charset="UTF-8">
@@ -9,17 +29,17 @@ export const htmlError = (archivos: string[], carpeta: string, fecha: string = f
         <title>Email Template</title>
         <style>
             body {
-                font-family: Arial, sans-serif;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 line-height: 1.6;
                 margin: 0;
                 padding: 0;
             }
             .container {
-                max-width: 600px;
+                max-width: 900px;
                 margin: 0 auto;
                 padding: 20px;
                 border: 1px solid #ccc;
-                border-radius: 5px;
+                border-radius: 8px;
                 background-color: #f9f9f9;
             }
             h2 {
@@ -28,6 +48,7 @@ export const htmlError = (archivos: string[], carpeta: string, fecha: string = f
                 text-overflow: ellipsis;
                 overflow: hidden;
                 text-align: center;
+                color: red
             }
             p {
                 color: #666;
@@ -35,17 +56,18 @@ export const htmlError = (archivos: string[], carpeta: string, fecha: string = f
             .footer {
                 margin-top: 20px;
                 text-align: center;
-                color: #999;
+                color: #000000;
             }
         </style>
     </head>
     <body>
         <div class="container">
             <h2>NOTIFICACION DE PROCESO AUTOMATIZADO - ERROR</h2>
-            <p>El proceso ejecutado presento un error</p>
-            <p>Proceso finalizado el: ${fecha} </p>
+            <p>Proceso finalizado el: ${fecha}</p>
+            <p>El proceso ejecutado presentó el siguiente error: </p>
+            <ul>${mensajeError}</ul>
             <div class="footer">
-                <p>Best Regards,<br> Your Company</p>
+                <img src="cid:SISTEMAS.png"; width="500" height="150"/>
             </div>
         </div>
     </body>`;

@@ -1,7 +1,8 @@
 import 'dotenv/config'
 import * as nodemailer from 'nodemailer'
-import { fechaHoy, htmlAEnviar } from './utils/utils';
-import { htmlSuccess } from './modules/email/template/htmlSuccess.template';
+import { fechaLocal, htmlAEnviar } from '../utils/utils';
+import { variablesEntorno } from './env';
+import { htmlSuccess } from '../modules/email/template/htmlSuccess.template';
 
 
 interface ProcessEnv {
@@ -18,14 +19,19 @@ interface OpcionesCorreo {
     destinatario: string;
     asunto?: string;
     mensaje?: string;
+    mensajeError?: string;
 }
 
-const { EMAIL_HOST, EMAIL_PASSWORD, EMAIL_PORT, EMAIL_USER } = process.env as unknown as ProcessEnv
+const { EMAIL_HOST, EMAIL_PASSWORD, EMAIL_PORT, EMAIL_USER } = variablesEntorno as unknown as ProcessEnv
 
 if (!EMAIL_HOST || !EMAIL_PASSWORD || !EMAIL_PORT || !EMAIL_USER) {
     throw new Error("Faltan variables de entorno")
 }
 
+/**
+ * Crea una instancia de transporte de nodemailer con el host de correo electrónico, el puerto y las credenciales de autenticación configurados.
+ * Esta instancia de transporte se utiliza para enviar correos electrónicos utilizando la biblioteca nodemailer.
+ */
 const transporte = nodemailer.createTransport({
     host: EMAIL_HOST,
     port: EMAIL_PORT,
@@ -49,8 +55,9 @@ export const enviarCorreo = async (opciones: OpcionesCorreo, NumberOption: numbe
         carpeta = "",
         remitente = EMAIL_USER,
         destinatario = '',
-        asunto = '',
-        mensaje = (NumberOption === 1) ? htmlAEnviar(archivo, carpeta).success : htmlAEnviar(archivo, carpeta).error,
+        asunto = (NumberOption === 1) ? 'Proceso Exitoso' : 'Proceso Fallido',
+        mensajeError = '',
+        mensaje = (NumberOption === 1) ? htmlAEnviar(archivo, carpeta).success : htmlAEnviar(archivo, carpeta, mensajeError,).error,
     } = opciones;
 
     try {
@@ -58,10 +65,17 @@ export const enviarCorreo = async (opciones: OpcionesCorreo, NumberOption: numbe
         await transporte.verify();
 
         const mailOptions: nodemailer.SendMailOptions = {
-            from: remitente,
+            from: `Automatizacion <${remitente}>`,
             to: destinatario,
             subject: asunto,
             html: mensaje,
+            watchHtml: mensaje,
+            //TODO: Esto debe cambiarse por variables de entorno
+            attachments: [{
+                filename: 'SISTEMAS.png',
+                path: 'src/public/SISTEMAS.png',
+                cid: 'SISTEMAS.png'
+            }]
         }
 
         const res = await transporte.sendMail(mailOptions);
@@ -90,21 +104,10 @@ export const enviarCorreo = async (opciones: OpcionesCorreo, NumberOption: numbe
         //     messageId: '<30e44259-da8f-1dc1-98d4-4b2016108e6c@gmail.com>'
         //   }
         return console.log(
-            `Se envió exitosamente el correo a: ${opciones.destinatario} el ${fechaHoy} `
+            `\nSe envió exitosamente el correo a: ${opciones.destinatario} el ${fechaLocal()} `
         );
     } catch (error) {
         console.error(`Error al enviar correo ${error}`);
         throw error;
     }
 };
-
-const dataCorreo: OpcionesCorreo = {
-    archivo: ["prueba.txt"],
-    carpeta: 'Prueba',
-    remitente: EMAIL_HOST,
-    destinatario: 'jordanoalvaradoc@gmail.com',
-    asunto: 'Prueba',
-    // mensaje: 'Hola'
-}
-
-// enviarCorreo(dataCorreo)
